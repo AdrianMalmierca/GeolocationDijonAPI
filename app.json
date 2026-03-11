@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "DijonVin2",
-    "slug": "DijonVin2",
+    "name": "DijonVin",
+    "slug": "DijonVin",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,10 +21,17 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.adrianmalmierca.DijonVin"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "owner": "adrianmalmierca",
+    "extra": {
+      "eas": {
+        "projectId": "9f2c53a1-cb7a-456f-b1e8-96d69e958260"
+      }
     }
   }
 }
