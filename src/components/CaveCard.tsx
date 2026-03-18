@@ -1,8 +1,3 @@
-/**
- * CaveCard.tsx
- * Tarjeta de una cave/commerce en la lista
- */
-
 import React from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet, Linking, Platform

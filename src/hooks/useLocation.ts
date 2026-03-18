@@ -1,8 +1,3 @@
-/**
- * useLocation.ts
- * Hook para obtener y seguir la ubicación del usuario
- */
-
 import { useState, useEffect, useCallback } from 'react';
 import * as Location from 'expo-location';
 import { UserLocation } from '../types';
@@ -26,7 +21,7 @@ export function useLocation(): UseLocationReturn {
     setError(null);
 
     try {
-      // Solicitar permisos
+      //Request permissions
       const { status } = await Location.requestForegroundPermissionsAsync();
       
       if (status !== 'granted') {
@@ -38,7 +33,7 @@ export function useLocation(): UseLocationReturn {
 
       setPermissionGranted(true);
 
-      // Obtener posición con alta precisión
+      //Obtain position with high precision
       const position = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.Balanced,
       });
@@ -49,7 +44,7 @@ export function useLocation(): UseLocationReturn {
         accuracy: position.coords.accuracy ?? undefined,
       });
     } catch (err) {
-      // Fallback a centro de Dijon si hay error
+      //Fallback to Dijons center in case there's an error
       console.warn('[useLocation] Error, fallback a Dijon centre:', err);
       setError('Impossible de déterminer votre position. Affichage centré sur Dijon.');
       setLocation({

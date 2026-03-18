@@ -1,66 +1,41 @@
-// ─────────────────────────────────────────────
-//  COLORES — Palette Bourgogne
-// ─────────────────────────────────────────────
 export const Colors = {
-  // Primarios
-  burgundy: '#6B1A2A',       // Vino tinto oscuro
-  burgundyLight: '#A0283F',  // Vino medio
-  gold: '#C9973A',           // Dorado uva
-  goldLight: '#E8BC6A',      // Dorado claro
-  cream: '#F5EDD6',          // Crema pergamino
-  // Neutros
-  dark: '#1A0A00',           // Casi negro
-  darkBrown: '#2D1A0A',      // Marrón oscuro
-  brown: '#5C3317',          // Marrón barrica
-  warmGray: '#8C7B6B',       // Gris cálido
-  lightGray: '#E8DDD0',      // Gris muy claro
-  white: '#FAFAF8',          // Blanco cálido
-  // Funcionales
-  success: '#4A7C59',        // Verde hoja vid
+  burgundy: '#6B1A2A',
+  burgundyLight: '#A0283F',
+  gold: '#C9973A',
+  goldLight: '#E8BC6A',
+  cream: '#F5EDD6',
+  dark: '#1A0A00',
+  darkBrown: '#2D1A0A',
+  brown: '#5C3317',
+  warmGray: '#8C7B6B',
+  lightGray: '#E8DDD0',
+  white: '#FAFAF8',
+  success: '#4A7C59',
   warning: '#C9973A',
   error: '#C0392B',
   info: '#2980B9',
-  // Mapa
   mapMarkerCave: '#6B1A2A',
   mapMarkerCommerce: '#C9973A',
   mapMarkerUser: '#2980B9',
 };
 
-// ─────────────────────────────────────────────
-//  API DIJON MÉTROPOLE — OpenDataSoft
-// ─────────────────────────────────────────────
 export const API = {
-  BASE_URL: 'https://data.metropole-dijon.fr/api/v2',
+  BASE_URL: 'https://overpass-api.de/api/interpreter',
+  CENTER: {
+    latitude: 47.3220,
+    longitude: 5.0415,
+  },
   DATASETS: {
     COMMERCES: 'commerces-de-dijon',
     EQUIPEMENTS_PUBLICS: 'equipements-publics',
     EQUIPEMENTS_ADMIN: 'equipements-administratifs',
     EQUIPEMENTS_SOCIAUX: 'equipements-sociaux',
-    BATIMENTS: 'batis_ampliweb@dijon-metropole', // fallback
+    BATIMENTS: 'batis_ampliweb@dijon-metropole',
   },
-  // Coordenadas centro de Dijon
-  CENTER: {
-    latitude: 47.3220,
-    longitude: 5.0415,
-  },
-  DEFAULT_RADIUS: 5000, // metros
+  DEFAULT_RADIUS: 5000,
   MAX_RECORDS: 100,
 };
 
-// ─────────────────────────────────────────────
-//  API TOURISTICO — data.gouv.fr / BFC Tourisme
-// ─────────────────────────────────────────────
-export const TOURISM_API = {
-  // API Datatourisme nacional — sin auth requerida
-  BASE_URL: 'https://diffuseur.datatourisme.fr/webservice',
-  // API de Bourgogne caves — BIVB (Bureau Interprofessionnel Vins Bourgogne)
-  // Se usa via la API pública de data.gouv.fr
-  CAVES_SEARCH: 'https://api-adresse.data.gouv.fr/search',
-};
-
-// ─────────────────────────────────────────────
-//  CATEGORÍAS DE COMMERCES (Dijon dataset)
-// ─────────────────────────────────────────────
 export const COMMERCE_CATEGORIES = {
   CAVE: ['cave', 'vins', 'caviste', 'vin'],
   RESTAURANT: ['restaurant', 'brasserie', 'bistrot', 'café', 'bar'],
@@ -68,9 +43,6 @@ export const COMMERCE_CATEGORIES = {
   ARTISANAT: ['artisan', 'poterie', 'galerie'],
 };
 
-// ─────────────────────────────────────────────
-//  DONNÉES MOCK — fallback si API no responde
-// ─────────────────────────────────────────────
 export const MOCK_CAVES = [
   {
     id: 'mock-1',
@@ -78,13 +50,14 @@ export const MOCK_CAVES = [
     address: '2 route de Beaune, Aloxe-Corton',
     latitude: 47.0654,
     longitude: 4.8699,
-    category: 'cave',
-    description: 'Cave historique au cœur de la Côte de Beaune. Visites et dégustations.',
+    category: 'cave' as const,
+    description: 'Cave historique au cœur de la Côte de Beaune.',
     phone: '+33 3 80 25 00 00',
     website: 'https://www.reine-pedauque.com',
     openingHours: 'Lun-Dim: 10h-18h',
-    appellations: ['Aloxe-Corton', 'Corton-Charlemagne', 'Pernand-Vergelesses'],
+    appellations: ['Aloxe-Corton', 'Corton-Charlemagne'],
     distance: null,
+    source: 'mock' as const,
   },
   {
     id: 'mock-2',
@@ -92,69 +65,74 @@ export const MOCK_CAVES = [
     address: '15 Château de Beaune, Beaune',
     latitude: 47.0248,
     longitude: 4.8393,
-    category: 'cave',
-    description: 'Domaine emblématique de Bourgogne. Plus de 300 ans d\'histoire vinicole.',
+    category: 'cave' as const,
+    description: 'Domaine emblématique de Bourgogne.',
     phone: '+33 3 80 24 80 24',
     website: 'https://www.bouchard-pereetfils.com',
     openingHours: 'Lun-Dim: 9h30-18h30',
-    appellations: ['Beaune', 'Meursault', 'Gevrey-Chambertin'],
+    appellations: ['Beaune', 'Meursault'],
     distance: null,
+    source: 'mock' as const,
   },
   {
     id: 'mock-3',
-    name: 'Maison Louis Jadot',
-    address: '21 rue Eugène Spuller, Beaune',
-    latitude: 47.0261,
-    longitude: 4.8352,
-    category: 'cave',
-    description: 'Maison de négoce-éleveur fondée en 1859. Vins de grande renommée mondiale.',
-    phone: '+33 3 80 22 10 57',
-    website: 'https://www.louisjadot.com',
-    openingHours: 'Lun-Ven: 9h-17h',
-    appellations: ['Gevrey-Chambertin', 'Chambolle-Musigny', 'Nuits-Saint-Georges'],
+    name: 'Le Pré aux Clercs',
+    address: '13 place de la Libération, Dijon',
+    latitude: 47.3228,
+    longitude: 5.0412,
+    category: 'restaurant' as const,
+    description: 'Restaurant gastronomique face au Palais des Ducs.',
+    phone: '+33 3 80 38 05 05',
+    website: 'https://www.lepreauclercs.com',
+    openingHours: 'Mar-Sam: 12h-14h, 19h-22h',
+    appellations: [],
     distance: null,
+    source: 'mock' as const,
   },
   {
     id: 'mock-4',
+    name: 'Moutarde Fallot',
+    address: '31 rue de la Chouette, Beaune',
+    latitude: 47.0231,
+    longitude: 4.8401,
+    category: 'commerce' as const,
+    description: 'Moutarderie artisanale fondée en 1840.',
+    phone: '+33 3 80 22 10 02',
+    website: 'https://www.fallot.com',
+    openingHours: 'Lun-Sam: 9h30-12h30, 14h-19h',
+    appellations: [],
+    distance: null,
+    source: 'mock' as const,
+  },
+  {
+    id: 'mock-5',
     name: 'Cave Millésime — Dijon Centre',
     address: '15 rue de la Liberté, Dijon',
     latitude: 47.3219,
     longitude: 5.0407,
-    category: 'cave',
-    description: 'Caviste indépendant au cœur de Dijon. Sélection pointue de vins de Bourgogne.',
+    category: 'cave' as const,
+    description: 'Caviste indépendant au cœur de Dijon.',
     phone: '+33 3 80 30 15 45',
     website: null,
     openingHours: 'Mar-Sam: 10h-19h30',
-    appellations: ['Gevrey-Chambertin', 'Meursault', 'Chablis'],
+    appellations: ['Gevrey-Chambertin', 'Meursault'],
     distance: null,
-  },
-  {
-    id: 'mock-5',
-    name: 'L\'Imaginaire — Cave à Vins',
-    address: '4 rue Bannelier, Dijon',
-    latitude: 47.3231,
-    longitude: 5.0421,
-    category: 'cave',
-    description: 'Vins naturels et biodynamiques de Bourgogne. Dégustations sur place.',
-    phone: '+33 3 80 68 12 33',
-    website: null,
-    openingHours: 'Mer-Sam: 11h-20h',
-    appellations: ['Irancy', 'Auxey-Duresses', 'Mâcon'],
-    distance: null,
+    source: 'mock' as const,
   },
   {
     id: 'mock-6',
-    name: 'Domaine de la Vougeraie',
-    address: 'Route nationale, Prémeaux-Prissey',
-    latitude: 47.1127,
-    longitude: 4.9530,
-    category: 'cave',
-    description: 'Domaine en biodynamie. Wines from Gevrey to Puligny.',
-    phone: '+33 3 80 62 48 25',
-    website: 'https://www.domainedelavougeraie.com',
-    openingHours: 'Sur RDV uniquement',
-    appellations: ['Vougeot', 'Bonnes-Mares', 'Clos Blanc de Vougeot'],
+    name: 'Brasserie Zeste',
+    address: '5 rue Amiral Roussin, Dijon',
+    latitude: 47.3215,
+    longitude: 5.0398,
+    category: 'restaurant' as const,
+    description: 'Brasserie moderne avec sélection de vins locaux.',
+    phone: '+33 3 80 67 14 32',
+    website: null,
+    openingHours: 'Lun-Dim: 12h-23h',
+    appellations: [],
     distance: null,
+    source: 'mock' as const,
   },
 ];
 
@@ -165,7 +143,7 @@ export const ROUTES_VIN = [
     description: 'De Dijon à Santenay — 60 km à travers les appellations les plus prestigieuses de Bourgogne.',
     duration: '1 journée',
     distance: '60 km',
-    difficulty: 'Facile',
+    difficulty: 'Facile' as const,
     waypoints: [
       { name: 'Dijon', lat: 47.3220, lng: 5.0415 },
       { name: 'Marsannay-la-Côte', lat: 47.2716, lng: 5.0048 },
@@ -182,7 +160,7 @@ export const ROUTES_VIN = [
     description: 'Les villages perchés au-dessus de la Côte de Nuits. Vins d\'altitude et paysages spectaculaires.',
     duration: 'Demi-journée',
     distance: '35 km',
-    difficulty: 'Modéré',
+    difficulty: 'Modéré' as const,
     waypoints: [
       { name: 'Nuits-Saint-Georges', lat: 47.1192, lng: 4.9504 },
       { name: 'Villars-Fontaine', lat: 47.1600, lng: 4.8900 },
