@@ -22,7 +22,12 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.adrianmalmierca.DijonVin"
+      "package": "com.adrianmalmierca.DijonVin",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyB56W7G_g6Np1H5spJ1AQbUEesp6AdvB9Q"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
