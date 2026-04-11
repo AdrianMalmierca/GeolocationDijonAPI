@@ -1,8 +1,3 @@
-/**
- * RoutesScreen.tsx
- * Rutas de vino de Borgoña — sin MapView (evita crash nativo)
- */
-
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
@@ -46,7 +41,7 @@ export default function RoutesScreen() {
 
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
 
-        {/* Selector de rutas */}
+        {/* Routes selector */}
         <View style={styles.routeSelector}>
           {ROUTES_VIN.map(route => (
             <TouchableOpacity
@@ -66,13 +61,13 @@ export default function RoutesScreen() {
           ))}
         </View>
 
-        {/* Visualización gráfica de la ruta */}
+        {/* Routes view */}
         <View style={styles.routeVisual}>
           <Text style={styles.routeVisualTitle}>{selectedRoute.name}</Text>
           <View style={styles.routeLine}>
             {selectedRoute.waypoints.map((wp, i) => (
               <View key={i} style={styles.waypointItem}>
-                {/* Punto + línea conectora */}
+                {/* Point + line */}
                 <View style={styles.waypointConnector}>
                   <View style={[
                     styles.waypointDot,
@@ -89,7 +84,7 @@ export default function RoutesScreen() {
                     <View style={[styles.connector, { backgroundColor: selectedRoute.color + '66' }]} />
                   )}
                 </View>
-                {/* Nombre */}
+                {/* Name */}
                 <View style={styles.waypointInfo}>
                   <Text style={styles.waypointName}>{wp.name}</Text>
                   {i === 0 && <Text style={styles.waypointTag}>Départ</Text>}
@@ -102,7 +97,7 @@ export default function RoutesScreen() {
           </View>
         </View>
 
-        {/* Detalle */}
+        {/* Detail */}
         <View style={styles.routeDetail}>
           <Text style={styles.routeDesc}>{selectedRoute.description}</Text>
 
@@ -122,10 +117,7 @@ export default function RoutesScreen() {
             <View style={styles.statDivider} />
             <View style={styles.stat}>
               <Ionicons
-                name="trending-up-outline"
-                size={22}
-                color={DIFFICULTY_COLOR[selectedRoute.difficulty]}
-              />
+                name="trending-up-outline" size={22} color={DIFFICULTY_COLOR[selectedRoute.difficulty]}/>
               <Text style={[
                 styles.statValue,
                 { color: DIFFICULTY_COLOR[selectedRoute.difficulty] }

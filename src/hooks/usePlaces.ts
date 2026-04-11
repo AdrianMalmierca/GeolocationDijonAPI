@@ -30,17 +30,22 @@ export function usePlaces(userLat?: number, userLng?: number): UsePlacesReturn {
     setLoading(true);
     setError(null);
     try {
-      // SIEMPRE buscar centrado en Dijon, no en la posición del usuario
-      // Así la app siempre muestra contenido útil
+      //Always fetch centered on Dijon, not on user location
+      //so we show the same places to all users, and we calculate the distance from the user to each place to sort 
+      // them by distance, but we don't want to fetch different places based on the user's location because it could 
+      // be outside of Dijon and then we would have no places to show, or if we fetch based on the user's location, 
+      // we could have different places for different users and it would be more complicated to manage the data and 
+      // the caching, so we always fetch the same data centered on Dijon and then we calculate the distance from the user 
+      // to each place to sort them by distance.
       const data = await fetchAllPlaces(
         API.CENTER.latitude,
         API.CENTER.longitude,
       );
 
-      // Si tenemos ubicación del usuario, calcular distancia real
-      // Si no, dejar distancia null (no mostrar)
+      //If we have the user's location, we calculate the distance from the user to each place,
+      // otherwise we leave the distance as null
       const withDistance = data.map(cave => ({
-        ...cave,
+        ...cave, //each cave inside data
         distance: (lat && lng)
           ? calculateDistance(lat, lng, cave.latitude, cave.longitude)
           : null,
@@ -55,11 +60,19 @@ export function usePlaces(userLat?: number, userLng?: number): UsePlacesReturn {
     }
   }, []);
 
+   //when the hook is used for the first time, we load the places with the user's location if we have it, 
+   // otherwise it will load with the default location (Dijon center) and then when we get the user's location 
+   // we can call refresh to load the places again with the user's location to calculate the distance and sort them 
+   // by distance.
   useEffect(() => {
     loadPlaces(userLat, userLng);
-  }, [userLat, userLng, loadPlaces]);
+  }, []); // solo cargar una vez al montar
 
-  // Filtros — sin filtro de radio (siempre mostramos Dijon entero)
+  //Filter places based on the selected categories in the filters, we can also add a filter for the radius in the future, 
+  // but for now we just filter by category, and we show all places that match the selected categories, regardless of 
+  // the distance, because we want to show all places to the user and let them decide which ones they want to visit b
+  // ased on the distance and the other information, but we could add a filter for the radius in the future if we want 
+  // to limit the number of places shown to the user based on their location and their preferences.
   const filteredPlaces = places.filter(place => {
     if (place.category === 'cave' && !filters.showCaves) return false;
     if (place.category === 'restaurant' && !filters.showRestaurants) return false;
@@ -79,13 +92,15 @@ export function usePlaces(userLat?: number, userLng?: number): UsePlacesReturn {
 }
 
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const R = 6371000;
-  const φ1 = (lat1 * Math.PI) / 180;
-  const φ2 = (lat2 * Math.PI) / 180;
-  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+  const R = 6371000; //earth radius in meters
+  const φ1 = (lat1 * Math.PI) / 180; //convert degrees to radians cause math.sin works in radians
+  const φ2 = (lat2 * Math.PI) / 180; 
+  const Δφ = ((lat2 - lat1) * Math.PI) / 180; //difference in latitude in radians
   const Δλ = ((lon2 - lon1) * Math.PI) / 180;
   const a =
-    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) /*difference in latitude*/ +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2); //difference in longitude
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); //atan calculates the angle between the two points,
+  // we multiply by 2 to get the distance in meters, and we multiply by R to convert it to meters,
+  // because the result of atan is in radians and we want the distance in meters.
 }

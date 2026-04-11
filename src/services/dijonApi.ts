@@ -6,34 +6,43 @@ const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
 
 const DIJON_BBOX = '47.00,4.82,47.45,5.15';
 
-// Query Overpass para un tipo de lugar
+//Query a Overpass API with a given query string and return the elements
+const OVERPASS_SERVERS = [
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter',
+];
+
 async function overpassQuery(query: string): Promise<any[]> {
-  try {
-    const response = await axios.get(OVERPASS_URL, {
-      params: { data: query },
-      timeout: 12000,
-    });
-    return response.data?.elements || [];
-  } catch (err) {
-    console.warn('[Overpass] Error:', err);
-    return [];
+  for (const server of OVERPASS_SERVERS) {
+    try {
+      const response = await axios.get(server, {
+        params: { data: query },
+        timeout: 20000, // 20 segundos
+      });
+      const elements = response.data?.elements || [];
+      if (elements.length > 0) return elements;
+    } catch (err) {
+      console.warn(`[Overpass] Fallo en ${server}`);
+    }
   }
+  return [];
 }
 
-// Normalizar un elemento OSM a Cave
+//Normalize an element from Overpass API to our Cave type
 function normalizeElement(el: any, category: Cave['category']): Cave | null {
   if (!el.lat || !el.lon) return null;
-  const tags = el.tags || {};
+  const tags = el.tags || {}; //OSM tags, where we find the name, address, description, etc. of the place
 
   const name = tags.name || tags['name:fr'] || 'Sans nom';
-  const address = [
+  const address = [ //filter null or undefined values and join the address parts
     tags['addr:housenumber'],
     tags['addr:street'],
     tags['addr:postcode'],
     tags['addr:city'],
   ].filter(Boolean).join(' ') || tags['contact:street'] || '';
 
-  return {
+  return { //build a Cave object from the OSM element, we use the id of the element prefixed with "osm-" t
+  // o avoid conflicts with our mock data, and we use the category passed as a parameter to set the category of the cave
     id: `osm-${el.id}`,
     name,
     address,
@@ -74,15 +83,16 @@ async function fetchRestaurants(): Promise<Cave[]> {
   node[amenity=wine_bar](${DIJON_BBOX});
   node[amenity=bar][name~"vin|cave|bourgogne",i](${DIJON_BBOX});
 );
-out;`;
+out;`; // overpass language, to have the date in json
+//search the nodes with some tags and inside the bounding box of Dijon
 
   const elements = await overpassQuery(query);
   return elements
     .map(el => normalizeElement(el, 'restaurant'))
-    .filter(Boolean) as Cave[];
+    .filter(Boolean) as Cave[]; //to say to typescript that we return an array of Cave, because we filter the nulls with filter(Boolean)
 }
 
-// Commerces gastronomiques
+//Commerces gastronomiques
 async function fetchCommerces(): Promise<Cave[]> {
   const query = `[out:json][timeout:15];
 (
@@ -100,29 +110,32 @@ out;`;
     .filter(Boolean) as Cave[];
 }
 
-// Función principal
+//Main function
 export async function fetchAllPlaces(
-  _userLat?: number,
+  _userLat?: number, //we dont use yet cause we put _
   _userLng?: number,
 ): Promise<Cave[]> {
-  console.log('[Overpass] Fetching data from OpenStreetMap...');
+  //console.log('[Overpass] Fetching data from OpenStreetMap...');
 
   const [cavesResult, restoResult, commercesResult] = await Promise.allSettled([
     fetchCaves(),
     fetchRestaurants(),
     fetchCommerces(),
-  ]);
+  ]); //excecute all the promises at the same time and wait for all of them to finish, even if some of them fail, 
+  // so we can get the data that we can and ignore the ones that fail, and we use Promise.allSettled instead 
+  // of Promise.all because if one of the promises fail, Promise.all will reject and we will not get any data, 
+  // but with Promise.allSettled we will get the results of all the promises, even if some of them fail
 
   const caves = cavesResult.status === 'fulfilled' ? cavesResult.value : [];
   const restos = restoResult.status === 'fulfilled' ? restoResult.value : [];
   const commerces = commercesResult.status === 'fulfilled' ? commercesResult.value : [];
 
-  console.log(`[Overpass] caves=${caves.length} restos=${restos.length} commerces=${commerces.length}`);
+  //console.log(`[Overpass] caves=${caves.length} restos=${restos.length} commerces=${commerces.length}`);
 
-  const all = [...caves, ...restos, ...commerces];
+  const all = [...caves, ...restos, ...commerces]; //combine all the results in a single array
 
   if (all.length === 0) {
-    console.log('[Overpass] Sin resultados, usando MOCK');
+    console.log('[Overpass] Without results, using MOCK');
     return MOCK_CAVES as Cave[];
   }
 

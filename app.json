@@ -25,7 +25,7 @@
       "package": "com.adrianmalmierca.DijonVin",
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyB56W7G_g6Np1H5spJ1AQbUEesp6AdvB9Q"
+          "apiKey": "AIzaSyAKc4iTUVX91-BHrrueGJxcX294KrNROMU"
         }
       }
     },
@@ -37,6 +37,9 @@
       "eas": {
         "projectId": "9f2c53a1-cb7a-456f-b1e8-96d69e958260"
       }
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

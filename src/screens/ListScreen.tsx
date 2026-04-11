@@ -1,8 +1,3 @@
-/**
- * ListScreen.tsx
- * Lista scrollable de todas las caves/commerces
- */
-
 import React, { useState, useMemo } from 'react';
 import {
   View, Text, StyleSheet, FlatList, TextInput,
@@ -26,16 +21,18 @@ export default function ListScreen() {
   const { location } = useLocation();
   const { filteredPlaces, loading, refresh } = usePlaces(location?.latitude, location?.longitude);
 
-  // Búsqueda + filtro por categoría + ordenación
-  const displayedPlaces = useMemo(() => {
+  //Search + filter by category + sorted by distance or name
+  const displayedPlaces = useMemo(() => { //Memo to calculate when the dependencies change,
+  // so we don't calculate the filtering and sorting on every render, but only when the filteredPlaces,
+  // searchQuery, sortBy or activeCategory change
     let places = [...filteredPlaces];
 
-    // Filtro por categoría
+    //Category filter
     if (activeCategory !== 'all') {
       places = places.filter(p => p.category === activeCategory);
     }
 
-    // Búsqueda por nombre/dirección
+    //Search by name, address, description or appellations
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       places = places.filter(p =>
@@ -46,7 +43,7 @@ export default function ListScreen() {
       );
     }
 
-    // Ordenar
+    //Sort by distance or name
     if (sortBy === 'distance') {
       places.sort((a, b) => (a.distance ?? Infinity) - (b.distance ?? Infinity));
     } else {
@@ -54,7 +51,8 @@ export default function ListScreen() {
     }
 
     return places;
-  }, [filteredPlaces, searchQuery, sortBy, activeCategory]);
+  }, [filteredPlaces, searchQuery, sortBy, activeCategory]); //to calculate the displayedPlaces only when one of
+  // these dependencies change
 
   const categories: { key: Cave['category'] | 'all'; label: string; icon: any }[] = [
     { key: 'all', label: 'Tous', icon: 'grid' },
@@ -70,7 +68,7 @@ export default function ListScreen() {
         <Text style={styles.headerTitle}>Caves & Terroir</Text>
         <Text style={styles.headerSubtitle}>{displayedPlaces.length} établissements trouvés</Text>
 
-        {/* Buscador */}
+        {/* Search */}
         <View style={styles.searchBar}>
           <Ionicons name="search" size={18} color={Colors.warmGray} />
           <TextInput
@@ -87,7 +85,7 @@ export default function ListScreen() {
           )}
         </View>
 
-        {/* Categorías */}
+        {/* Categories */}
         <View style={styles.categoryTabs}>
           {categories.map(cat => (
             <TouchableOpacity
@@ -127,16 +125,16 @@ export default function ListScreen() {
         </View>
       </View>
 
-      {/* Lista */}
+      {/* List */}
       <FlatList
-        data={displayedPlaces}
-        keyExtractor={item => item.id}
-        renderItem={({ item }) => <CaveCard cave={item} />}
+        data={displayedPlaces} //nemos list
+        keyExtractor={item => item.id} //key extractor for the list, we use the id of the cave
+        renderItem={({ item }) => <CaveCard cave={item} />} //we use the CaveCard component to render each cave
         contentContainerStyle={styles.listContent}
-        refreshControl={
+        refreshControl={ //pull to refresh the list
           <RefreshControl
             refreshing={loading}
-            onRefresh={() => refresh(location?.latitude, location?.longitude)}
+            onRefresh={() => refresh(location?.latitude, location?.longitude)} //recharge the data with the user's location
             tintColor={Colors.burgundy}
           />
         }

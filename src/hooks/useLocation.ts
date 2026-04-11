@@ -22,9 +22,9 @@ export function useLocation(): UseLocationReturn {
 
     try {
       //Request permissions
-      const { status } = await Location.requestForegroundPermissionsAsync();
+      const { status } = await Location.requestForegroundPermissionsAsync(); //you can use const response
       
-      if (status !== 'granted') {
+      if (status !== 'granted') { //so here you would use response.status instead of status
         setError('Autorisation de localisation refusée. Activez-la dans les paramètres.');
         setPermissionGranted(false);
         setLoading(false);
@@ -55,10 +55,15 @@ export function useLocation(): UseLocationReturn {
       setLoading(false);
     }
   }, []);
-
-  useEffect(() => {
+  //so when we use this hook for the first time, we ask for the location automatically,
+  // but we don't want to ask for the location every time it changes, so we use useEffect with an empty dependency 
+  // array to execute only once on mount, and we use the requestLocation function that is memoized with useCallback 
+  // to avoid unnecessary re-renders and to have a stable reference for the refresh function that we return from the hook
+  useEffect(() => { 
     requestLocation();
-  }, [requestLocation]);
+  }, [requestLocation]); //React execute the effect only once on mount, and if requestLocation changes
+  // (which it won't because it's memoized with useCallback), it would execute again, but in this case it will only
+  //  execute once when the component that uses this hook is mounted. 
 
   return {
     location,

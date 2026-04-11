@@ -1,8 +1,3 @@
-/**
- * MapScreen.tsx — Con react-native-maps
- * Requiere EAS Build — no funciona con Expo Go
- */
-
 import React, { useState, useRef, useCallback } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, Platform, Animated,
@@ -17,29 +12,11 @@ import { CaveCard } from '../components/CaveCard';
 import { LoadingScreen } from '../components/LoadingScreen';
 import { Colors, API } from '../constants';
 import { Cave } from '../types';
-
-const CATEGORY_CONFIG = {
-  cave:       { icon: 'wine'       as const, color: Colors.burgundy },
-  commerce:   { icon: 'storefront' as const, color: Colors.brown    },
-  restaurant: { icon: 'restaurant' as const, color: Colors.gold     },
-  equipement: { icon: 'business'   as const, color: Colors.warmGray },
-};
-
-function MapMarkerView({ cave, selected }: { cave: Cave; selected: boolean }) {
-  const config = CATEGORY_CONFIG[cave.category] ?? CATEGORY_CONFIG.commerce;
-  return (
-    <View style={[styles.markerContainer, selected && styles.markerSelected]}>
-      <View style={[styles.markerBubble, { backgroundColor: config.color }]}>
-        <Ionicons name={config.icon} size={14} color={Colors.white} />
-      </View>
-      <View style={[styles.markerTail, { borderTopColor: config.color }]} />
-    </View>
-  );
-}
+import { MapMarker } from '../components/MapMarker';
 
 export default function MapScreen() {
   const insets = useSafeAreaInsets();
-  const mapRef = useRef<MapView>(null);
+  const mapRef = useRef<MapView>(null); //useRef to keep a persistent reference to the MapView component, to be able to call methods on it like animateToRegion
   const [selectedCave, setSelectedCave] = useState<Cave | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const bottomAnim = useRef(new Animated.Value(0)).current;
@@ -51,13 +28,13 @@ export default function MapScreen() {
 
   const isLoading = locLoading || placesLoading;
 
-  const handleMarkerPress = useCallback((cave: Cave) => {
-    setSelectedCave(cave);
+  const handleMarkerPress = useCallback((cave: Cave) => { //usecallback to memoize the function and not recreate it on every render
+    setSelectedCave(cave); //activate the bottom sheet
     Animated.spring(bottomAnim, {
-      toValue: 1, useNativeDriver: true, tension: 60, friction: 10,
+      toValue: 1, useNativeDriver: true, tension: 60, friction: 10, //spring animation for the bottom sheet, with a bit of bounce
     }).start();
     mapRef.current?.animateToRegion({
-      latitude: cave.latitude - 0.004,
+      latitude: cave.latitude - 0.004, //to center the cave a bit higher on the screen to show the bottom sheet
       longitude: cave.longitude,
       latitudeDelta: 0.02,
       longitudeDelta: 0.02,
@@ -66,8 +43,8 @@ export default function MapScreen() {
 
   const handleClose = useCallback(() => {
     Animated.timing(bottomAnim, {
-      toValue: 0, duration: 200, useNativeDriver: true,
-    }).start(() => setSelectedCave(null));
+      toValue: 0, duration: 200, useNativeDriver: true, //to value 0 to hide the bottom sheet, with a fade out animation
+    }).start(() => setSelectedCave(null)); //hide the bottom sheet and then set the selected cave to null to unselect the marker
   }, [bottomAnim]);
 
   const centerOnUser = useCallback(() => {
@@ -92,13 +69,17 @@ export default function MapScreen() {
 
   if (isLoading) return <LoadingScreen message="Recherche des caves..." />;
 
-  const bottomTranslate = bottomAnim.interpolate({
+  const bottomTranslate = bottomAnim.interpolate({ //transform the bottomAnim value from 0 to 1 into a translateY value from 320 (hidden) to 0 (visible)
     inputRange: [0, 1], outputRange: [320, 0],
+    //starts in 0 to 1, 0 is hidden and 1 is visible
+    //but 0, 1 is not valid for the UI, we need pixels
+    //animation: 0 -> 320px down
+    //animation: 1 -> 0px visible
   });
 
   return (
     <View style={styles.container}>
-      {/* MAPA */}
+      {/* Map */}
       <MapView
         ref={mapRef}
         style={styles.map}
@@ -110,22 +91,24 @@ export default function MapScreen() {
           longitudeDelta: 0.35,
         }}
         showsUserLocation={true}
-        showsMyLocationButton={false}
-        showsCompass={false}
+        showsMyLocationButton={false} //hide default location button to use our custom one
+        showsCompass={false} //hide compass to avoid overlapping with our controls
       >
         {filteredPlaces.map(cave => (
           <Marker
             key={cave.id}
             coordinate={{ latitude: cave.latitude, longitude: cave.longitude }}
             onPress={() => handleMarkerPress(cave)}
-            tracksViewChanges={false}
+            tracksViewChanges={false} //to optimize performance by not re-rendering the marker view on every change,
+            // since we use a custom view for the marker, we set it to false and it will only re-render when the marker 
+            // is pressed and selected, which is when we want to show the selected state
           >
-            <MapMarkerView cave={cave} selected={selectedCave?.id === cave.id} />
+            <MapMarker cave={cave} selected={selectedCave?.id === cave.id} />
           </Marker>
         ))}
       </MapView>
 
-      {/* HEADER */}
+      {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <View style={styles.headerRow}>
           <View style={styles.titleRow}>
@@ -138,7 +121,7 @@ export default function MapScreen() {
         </View>
       </View>
 
-      {/* CONTROLES */}
+      {/* Controls */}
       <View style={[styles.controls, { top: insets.top + 68 }]}>
         <TouchableOpacity style={styles.controlBtn} onPress={centerOnUser}>
           <Ionicons name="locate" size={20} color={Colors.burgundy} />
@@ -160,7 +143,7 @@ export default function MapScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* FILTROS */}
+      {/* Filters */}
       {showFilters && (
         <View style={[styles.filtersPanel, { top: insets.top + 68 }]}>
           <Text style={styles.filterTitle}>Filtres</Text>
@@ -178,9 +161,10 @@ export default function MapScreen() {
               <Text style={styles.filterLabel}>{f.label}</Text>
               <View style={[
                 styles.toggle,
-                !!filters[f.key as keyof typeof filters] && { backgroundColor: f.color }
+                !!filters[f.key as keyof typeof filters] && { backgroundColor: f.color } //if the filter is active, change the bg color to the filter color, otherwise keep it white
+                //!! transforms true -> true, false -> false and undefined -> false, to avoid issues with undefined values in filters
               ]}>
-                {filters[f.key as keyof typeof filters] && (
+                {filters[f.key as keyof typeof filters] && ( //render the check icon only if the filter is active
                   <Ionicons name="checkmark" size={11} color={Colors.white} />
                 )}
               </View>
@@ -189,7 +173,7 @@ export default function MapScreen() {
         </View>
       )}
 
-      {/* BOTTOM SHEET */}
+      {/* Bottom Sheet */}
       {selectedCave && (
         <Animated.View style={[
           styles.bottomSheet,
@@ -203,7 +187,7 @@ export default function MapScreen() {
         </Animated.View>
       )}
 
-      {/* ERROR BANNER */}
+      {/* Error Banner */}
       {locError && (
         <View style={[styles.errorBanner, { top: insets.top + 60 }]}>
           <Ionicons name="warning-outline" size={13} color={Colors.white} />
@@ -218,7 +202,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   map: { flex: 1 },
 
-  // Marcadores
+  //Marker
   markerContainer: { alignItems: 'center' },
   markerSelected: { transform: [{ scale: 1.3 }] },
   markerBubble: {
@@ -235,7 +219,7 @@ const styles = StyleSheet.create({
     marginTop: -1,
   },
 
-  // Header
+  //Header
   header: {
     position: 'absolute', top: 0, left: 0, right: 0,
     backgroundColor: Colors.dark + 'EE',
@@ -250,7 +234,7 @@ const styles = StyleSheet.create({
   },
   countText: { color: Colors.white, fontSize: 12, fontWeight: '600' },
 
-  // Controles
+  //Controls
   controls: { position: 'absolute', right: 14, gap: 9 },
   controlBtn: {
     width: 42, height: 42, borderRadius: 11, backgroundColor: Colors.white,
@@ -260,7 +244,7 @@ const styles = StyleSheet.create({
   },
   controlBtnActive: { backgroundColor: Colors.burgundy },
 
-  // Filtros
+  //Filters
   filtersPanel: {
     position: 'absolute', right: 66, backgroundColor: Colors.white,
     borderRadius: 14, padding: 14, minWidth: 200,
@@ -279,7 +263,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center', alignItems: 'center',
   },
 
-  // Bottom sheet
+  //Bottom sheet
   bottomSheet: {
     position: 'absolute', bottom: 0, left: 0, right: 0,
     backgroundColor: Colors.cream,
@@ -290,7 +274,7 @@ const styles = StyleSheet.create({
   },
   closeBtn: { alignSelf: 'flex-end', padding: 8, marginRight: 10 },
 
-  // Error
+  //Error
   errorBanner: {
     position: 'absolute', left: 14, right: 66,
     backgroundColor: Colors.burgundy + 'CC',
