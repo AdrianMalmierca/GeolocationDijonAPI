@@ -9,7 +9,6 @@ export interface Cave {
   phone?: string;
   website?: string;
   openingHours?: string;
-  appellations?: string[];
   distance?: number | null;
   source?: 'api' | 'mock';
 }
@@ -43,5 +42,4 @@ export interface FilterState {
   showCaves: boolean;
   showRestaurants: boolean;
   showCommerces: boolean;
-  radius: number;
 }

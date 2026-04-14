@@ -2,8 +2,6 @@ import axios from 'axios';
 import { MOCK_CAVES } from '../constants';
 import { Cave } from '../types';
 
-const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
-
 const DIJON_BBOX = '47.00,4.82,47.45,5.15';
 
 //Query a Overpass API with a given query string and return the elements
@@ -17,12 +15,12 @@ async function overpassQuery(query: string): Promise<any[]> {
     try {
       const response = await axios.get(server, {
         params: { data: query },
-        timeout: 20000, // 20 segundos
+        timeout: 20000,
       });
       const elements = response.data?.elements || [];
       if (elements.length > 0) return elements;
     } catch (err) {
-      console.warn(`[Overpass] Fallo en ${server}`);
+      console.warn(`[Overpass] Fail in ${server}`);
     }
   }
   return [];
@@ -69,9 +67,9 @@ async function fetchCaves(): Promise<Cave[]> {
 );
 out;`;
 
-  const elements = await overpassQuery(query);
+  const elements = await overpassQuery(query); //execute the query and get the elements, which are the raw data from OSM
   return elements
-    .map(el => normalizeElement(el, 'cave'))
+    .map(el => normalizeElement(el, 'cave')) //transform each element into a Cave object, with the category "cave"
     .filter(Boolean) as Cave[];
 }
 
@@ -111,10 +109,7 @@ out;`;
 }
 
 //Main function
-export async function fetchAllPlaces(
-  _userLat?: number, //we dont use yet cause we put _
-  _userLng?: number,
-): Promise<Cave[]> {
+export async function fetchAllPlaces(): Promise<Cave[]> {
   //console.log('[Overpass] Fetching data from OpenStreetMap...');
 
   const [cavesResult, restoResult, commercesResult] = await Promise.allSettled([
@@ -130,7 +125,9 @@ export async function fetchAllPlaces(
   const restos = restoResult.status === 'fulfilled' ? restoResult.value : [];
   const commerces = commercesResult.status === 'fulfilled' ? commercesResult.value : [];
 
-  //console.log(`[Overpass] caves=${caves.length} restos=${restos.length} commerces=${commerces.length}`);
+  console.log(`[Overpass] caves=${caves.length} restos=${restos.length} commerces=${commerces.length}`);
+
+  if (caves.length > 0) console.log('[Overpass] Sample cave:', JSON.stringify(caves[0], null, 2));
 
   const all = [...caves, ...restos, ...commerces]; //combine all the results in a single array
 

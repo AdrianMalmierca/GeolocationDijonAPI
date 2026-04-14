@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  Linking, Platform, Dimensions,
+  Linking, Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 import { ROUTES_VIN, Colors } from '../constants';
 import { RouteVin } from '../types';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function RoutesScreen() {
   const insets = useSafeAreaInsets();
@@ -40,7 +37,6 @@ export default function RoutesScreen() {
       </View>
 
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
-
         {/* Routes selector */}
         <View style={styles.routeSelector}>
           {ROUTES_VIN.map(route => (

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { fetchAllPlaces } from '../services/dijonApi';
+import { calculateDistance} from '../services/dijonApi';
 import { Cave, FilterState } from '../types';
-import { MOCK_CAVES, API } from '../constants';
+import { subscribe, getCacheState, loadPlaces } from '../services/placesCache';
 
 interface UsePlacesReturn {
   places: Cave[];
@@ -17,61 +17,42 @@ const DEFAULT_FILTERS: FilterState = {
   showCaves: true,
   showRestaurants: true,
   showCommerces: true,
-  radius: 50,
 };
 
 export function usePlaces(userLat?: number, userLng?: number): UsePlacesReturn {
-  const [places, setPlaces] = useState<Cave[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
+  const [cacheState, setCacheState] = useState(getCacheState());
 
-  const loadPlaces = useCallback(async (lat?: number, lng?: number) => {
-    setLoading(true);
-    setError(null);
-    try {
-      //Always fetch centered on Dijon, not on user location
-      //so we show the same places to all users, and we calculate the distance from the user to each place to sort 
-      // them by distance, but we don't want to fetch different places based on the user's location because it could 
-      // be outside of Dijon and then we would have no places to show, or if we fetch based on the user's location, 
-      // we could have different places for different users and it would be more complicated to manage the data and 
-      // the caching, so we always fetch the same data centered on Dijon and then we calculate the distance from the user 
-      // to each place to sort them by distance.
-      const data = await fetchAllPlaces(
-        API.CENTER.latitude,
-        API.CENTER.longitude,
-      );
-
-      //If we have the user's location, we calculate the distance from the user to each place,
-      // otherwise we leave the distance as null
-      const withDistance = data.map(cave => ({
-        ...cave, //each cave inside data
-        distance: (lat && lng)
-          ? calculateDistance(lat, lng, cave.latitude, cave.longitude)
-          : null,
-      }));
-
-      setPlaces(withDistance.length > 0 ? withDistance as Cave[] : MOCK_CAVES as Cave[]);
-    } catch (err) {
-      setError('Erreur de chargement.');
-      setPlaces(MOCK_CAVES as Cave[]);
-    } finally {
-      setLoading(false);
-    }
+  useEffect(() => {
+    const unsub = subscribe(() => setCacheState(getCacheState())); //connect to the global cache state,
+    // so we can get the data and the loading state from the cache, and we also subscribe to changes in the cache, so 
+    // when the cache is updated, we update our local state and re-render (setCacheState) the component with the new data
+    loadPlaces(); //shoot the fetch on mount to load the data in the cache
+    return () => { unsub(); }; //function to unsubscribe from the cache updates when the component is unmounted, 
+    // to avoid memory leaks and unnecessary updates when the component is not visible anymore
   }, []);
 
-   //when the hook is used for the first time, we load the places with the user's location if we have it, 
-   // otherwise it will load with the default location (Dijon center) and then when we get the user's location 
-   // we can call refresh to load the places again with the user's location to calculate the distance and sort them 
-   // by distance.
-  useEffect(() => {
-    loadPlaces(userLat, userLng);
-  }, []); // solo cargar una vez al montar
+  const refresh = useCallback(async () => { //recharge although we have a cache, we want to give the user the possibility 
+  // to refresh the data manually, so we can add a refresh button in the UI that calls this function, 
+    await loadPlaces(true);
+  }, []); //only created on mount, because we don't want to create a new function on every render
+
+  const places = cacheState.data.map(cave => ({
+    ...cave,
+    distance: (userLat && userLng)
+      ? calculateDistance(userLat, userLng, cave.latitude, cave.longitude)
+      : null,
+  })) as Cave[];//only charge on mount
+  //only on mount to dont load the places again every time the user's location changes, because we want to give the user 
+  // the control to refresh the data when they want, and we can also add a button to refresh the data manually, 
+  // so we don't want to refresh the data automatically every time the user's location changes, because it could 
+  // be annoying for the user if they are moving and the data is refreshing all the time, so we let them decide 
+  // when they want to refresh the data by themselves.
 
   //Filter places based on the selected categories in the filters, we can also add a filter for the radius in the future, 
   // but for now we just filter by category, and we show all places that match the selected categories, regardless of 
-  // the distance, because we want to show all places to the user and let them decide which ones they want to visit b
-  // ased on the distance and the other information, but we could add a filter for the radius in the future if we want 
+  // the distance, because we want to show all places to the user and let them decide which ones they want to visit based 
+  // on the distance and the other information, but we could add a filter for the radius in the future if we want 
   // to limit the number of places shown to the user based on their location and their preferences.
   const filteredPlaces = places.filter(place => {
     if (place.category === 'cave' && !filters.showCaves) return false;
@@ -83,24 +64,10 @@ export function usePlaces(userLat?: number, userLng?: number): UsePlacesReturn {
   return {
     places,
     filteredPlaces,
-    loading,
-    error,
-    refresh: loadPlaces,
+    loading: cacheState.loading,
+    error: cacheState.error,
+    refresh,
     filters,
     setFilters,
   };
-}
-
-function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const R = 6371000; //earth radius in meters
-  const φ1 = (lat1 * Math.PI) / 180; //convert degrees to radians cause math.sin works in radians
-  const φ2 = (lat2 * Math.PI) / 180; 
-  const Δφ = ((lat2 - lat1) * Math.PI) / 180; //difference in latitude in radians
-  const Δλ = ((lon2 - lon1) * Math.PI) / 180;
-  const a =
-    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) /*difference in latitude*/ +
-    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2); //difference in longitude
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); //atan calculates the angle between the two points,
-  // we multiply by 2 to get the distance in meters, and we multiply by R to convert it to meters,
-  // because the result of atan is in radians and we want the distance in meters.
 }

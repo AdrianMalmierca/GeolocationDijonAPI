@@ -66,7 +66,7 @@ export function CaveCard({ cave, onPress, style }: CaveCardProps) {
         </View>
       </View>
 
-      {/* Adresse */}
+      {/* Address */}
       {cave.address ? (
         <View style={styles.row}>
           <Ionicons name="location-outline" size={14} color={Colors.warmGray} />
@@ -77,17 +77,6 @@ export function CaveCard({ cave, onPress, style }: CaveCardProps) {
       {/* Description */}
       {cave.description ? (
         <Text style={styles.description} numberOfLines={2}>{cave.description}</Text>
-      ) : null}
-
-      {/* Appellations */}
-      {cave.appellations && cave.appellations.length > 0 ? (
-        <View style={styles.appellationsRow}>
-          {cave.appellations.slice(0, 3).map((app, i) => (
-            <View key={i} style={styles.appellationTag}>
-              <Text style={styles.appellationText}>{app}</Text>
-            </View>
-          ))}
-        </View>
       ) : null}
 
       {/* Horaires */}
@@ -219,25 +208,6 @@ const styles = StyleSheet.create({
     color: Colors.warmGray,
     fontSize: 12,
     flex: 1,
-  },
-  appellationsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 6,
-    marginBottom: 10,
-  },
-  appellationTag: {
-    backgroundColor: Colors.cream,
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderWidth: 1,
-    borderColor: Colors.goldLight,
-  },
-  appellationText: {
-    color: Colors.darkBrown,
-    fontSize: 11,
-    fontWeight: '500',
   },
   actions: {
     flexDirection: 'row',

@@ -36,6 +36,12 @@ export default function AboutScreen() {
     { name: 'Commerces', detail: 'shop=cheese, shop=deli, shop=butcher' },
   ];
 
+  const legend = [
+    { color: Colors.burgundy, icon: 'wine', label: 'Cave à vins' },
+    { color: Colors.gold, icon: 'restaurant', label: 'Restaurant / Gastronomie' },
+    { color: Colors.brown, icon: 'storefront', label: 'Commerce local' },
+  ]
+
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
@@ -87,11 +93,7 @@ export default function AboutScreen() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Légende</Text>
-          {[
-            { color: Colors.burgundy, icon: 'wine', label: 'Cave à vins' },
-            { color: Colors.gold, icon: 'restaurant', label: 'Restaurant / Gastronomie' },
-            { color: Colors.brown, icon: 'storefront', label: 'Commerce local' },
-          ].map(item => (
+          {legend.map(item => (
             <View key={item.label} style={styles.legendRow}>
               <View style={[styles.legendDot, { backgroundColor: item.color }]}>
                 <Ionicons name={item.icon as any} size={14} color={Colors.white} />

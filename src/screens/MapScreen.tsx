@@ -77,6 +77,12 @@ export default function MapScreen() {
     //animation: 1 -> 0px visible
   });
 
+  const filtersData = [
+    { key: 'showCaves',       label: 'Caves',       icon: 'wine'       as const, color: Colors.burgundy },
+    { key: 'showRestaurants', label: 'Restaurants', icon: 'restaurant' as const, color: Colors.gold     },
+    { key: 'showCommerces',   label: 'Commerces',   icon: 'storefront' as const, color: Colors.brown    },
+  ];
+
   return (
     <View style={styles.container}>
       {/* Map */}
@@ -147,11 +153,7 @@ export default function MapScreen() {
       {showFilters && (
         <View style={[styles.filtersPanel, { top: insets.top + 68 }]}>
           <Text style={styles.filterTitle}>Filtres</Text>
-          {[
-            { key: 'showCaves',       label: 'Caves',       icon: 'wine'       as const, color: Colors.burgundy },
-            { key: 'showRestaurants', label: 'Restaurants', icon: 'restaurant' as const, color: Colors.gold     },
-            { key: 'showCommerces',   label: 'Commerces',   icon: 'storefront' as const, color: Colors.brown    },
-          ].map(f => (
+          {filtersData.map(f => (
             <TouchableOpacity
               key={f.key}
               style={styles.filterRow}
@@ -163,6 +165,8 @@ export default function MapScreen() {
                 styles.toggle,
                 !!filters[f.key as keyof typeof filters] && { backgroundColor: f.color } //if the filter is active, change the bg color to the filter color, otherwise keep it white
                 //!! transforms true -> true, false -> false and undefined -> false, to avoid issues with undefined values in filters
+                //double !! cause we want to be sure to have a boolean value, 
+                // if filters[f.key] is undefined it will be false and the toggle will be in the off state
               ]}>
                 {filters[f.key as keyof typeof filters] && ( //render the check icon only if the filter is active
                   <Ionicons name="checkmark" size={11} color={Colors.white} />

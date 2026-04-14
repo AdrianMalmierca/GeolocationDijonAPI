@@ -13,7 +13,7 @@ import { Colors } from '../constants';
 import { Cave } from '../types';
 
 export default function ListScreen() {
-  const insets = useSafeAreaInsets();
+  const insets = useSafeAreaInsets(); //to get the safe area insets of the device, to avoid the notch and the home indicator on iOS, and the status bar on Android
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'distance' | 'name'>('distance');
   const [activeCategory, setActiveCategory] = useState<Cave['category'] | 'all'>('all');
@@ -38,8 +38,7 @@ export default function ListScreen() {
       places = places.filter(p =>
         p.name.toLowerCase().includes(q) ||
         p.address.toLowerCase().includes(q) ||
-        p.description?.toLowerCase().includes(q) ||
-        p.appellations?.some(a => a.toLowerCase().includes(q))
+        p.description?.toLowerCase().includes(q)
       );
     }
 

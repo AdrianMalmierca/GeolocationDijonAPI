@@ -63,7 +63,7 @@ export function useLocation(): UseLocationReturn {
     requestLocation();
   }, [requestLocation]); //React execute the effect only once on mount, and if requestLocation changes
   // (which it won't because it's memoized with useCallback), it would execute again, but in this case it will only
-  //  execute once when the component that uses this hook is mounted. 
+  // execute once when the component that uses this hook is mounted. 
 
   return {
     location,

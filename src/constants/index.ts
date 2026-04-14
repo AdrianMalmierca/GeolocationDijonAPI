@@ -20,27 +20,10 @@ export const Colors = {
 };
 
 export const API = {
-  BASE_URL: 'https://overpass-api.de/api/interpreter',
   CENTER: {
     latitude: 47.3220,
     longitude: 5.0415,
   },
-  DATASETS: {
-    COMMERCES: 'commerces-de-dijon',
-    EQUIPEMENTS_PUBLICS: 'equipements-publics',
-    EQUIPEMENTS_ADMIN: 'equipements-administratifs',
-    EQUIPEMENTS_SOCIAUX: 'equipements-sociaux',
-    BATIMENTS: 'batis_ampliweb@dijon-metropole',
-  },
-  DEFAULT_RADIUS: 5000,
-  MAX_RECORDS: 100,
-};
-
-export const COMMERCE_CATEGORIES = {
-  CAVE: ['cave', 'vins', 'caviste', 'vin'],
-  RESTAURANT: ['restaurant', 'brasserie', 'bistrot', 'café', 'bar'],
-  GASTRONOMIE: ['fromagerie', 'charcuterie', 'épicerie', 'traiteur', 'boulangerie'],
-  ARTISANAT: ['artisan', 'poterie', 'galerie'],
 };
 
 export const MOCK_CAVES = [
@@ -55,7 +38,6 @@ export const MOCK_CAVES = [
     phone: '+33 3 80 25 00 00',
     website: 'https://www.reine-pedauque.com',
     openingHours: 'Lun-Dim: 10h-18h',
-    appellations: ['Aloxe-Corton', 'Corton-Charlemagne'],
     distance: null,
     source: 'mock' as const,
   },
@@ -70,7 +52,6 @@ export const MOCK_CAVES = [
     phone: '+33 3 80 24 80 24',
     website: 'https://www.bouchard-pereetfils.com',
     openingHours: 'Lun-Dim: 9h30-18h30',
-    appellations: ['Beaune', 'Meursault'],
     distance: null,
     source: 'mock' as const,
   },
@@ -85,7 +66,6 @@ export const MOCK_CAVES = [
     phone: '+33 3 80 38 05 05',
     website: 'https://www.lepreauclercs.com',
     openingHours: 'Mar-Sam: 12h-14h, 19h-22h',
-    appellations: [],
     distance: null,
     source: 'mock' as const,
   },
@@ -100,7 +80,6 @@ export const MOCK_CAVES = [
     phone: '+33 3 80 22 10 02',
     website: 'https://www.fallot.com',
     openingHours: 'Lun-Sam: 9h30-12h30, 14h-19h',
-    appellations: [],
     distance: null,
     source: 'mock' as const,
   },
@@ -115,7 +94,6 @@ export const MOCK_CAVES = [
     phone: '+33 3 80 30 15 45',
     website: null,
     openingHours: 'Mar-Sam: 10h-19h30',
-    appellations: ['Gevrey-Chambertin', 'Meursault'],
     distance: null,
     source: 'mock' as const,
   },
@@ -130,7 +108,6 @@ export const MOCK_CAVES = [
     phone: '+33 3 80 67 14 32',
     website: null,
     openingHours: 'Lun-Dim: 12h-23h',
-    appellations: [],
     distance: null,
     source: 'mock' as const,
   },
