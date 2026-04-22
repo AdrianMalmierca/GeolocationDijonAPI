@@ -18,8 +18,7 @@ export default function ListScreen() {
   const [sortBy, setSortBy] = useState<'distance' | 'name'>('distance');
   const [activeCategory, setActiveCategory] = useState<Cave['category'] | 'all'>('all');
 
-  const { location } = useLocation();
-  const { filteredPlaces, loading, refresh } = usePlaces(location?.latitude, location?.longitude);
+  const { filteredPlaces, loading, refresh } = usePlaces();
 
   //Search + filter by category + sorted by distance or name
   const displayedPlaces = useMemo(() => { //Memo to calculate when the dependencies change,
@@ -133,7 +132,6 @@ export default function ListScreen() {
         refreshControl={ //pull to refresh the list
           <RefreshControl
             refreshing={loading}
-            onRefresh={() => refresh(location?.latitude, location?.longitude)} //recharge the data with the user's location
             tintColor={Colors.burgundy}
           />
         }

@@ -21,12 +21,12 @@ export default function MapScreen() {
   const [showFilters, setShowFilters] = useState(false);
   const bottomAnim = useRef(new Animated.Value(0)).current;
 
-  const { location, loading: locLoading, error: locError } = useLocation();
+  const { location, error: locError } = useLocation();
   const { filteredPlaces, loading: placesLoading, filters, setFilters, refresh } = usePlaces(
     location?.latitude, location?.longitude
   );
 
-  const isLoading = locLoading || placesLoading;
+  const isLoading = placesLoading;
 
   const handleMarkerPress = useCallback((cave: Cave) => { //usecallback to memoize the function and not recreate it on every render
     setSelectedCave(cave); //activate the bottom sheet
