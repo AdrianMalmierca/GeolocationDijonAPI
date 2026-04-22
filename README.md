@@ -13,7 +13,7 @@ A native Android app built with React Native and Expo for discovering wine caves
 
 📱 [Descargar APK para Android](https://github.com/AdrianMalmierca/GeolocationDijonAPI/releases/latest)
 
-> Enable **Unknown sources** in Settings → Security before installing.
+> Enable **Unknown sources** in Settings → Security before installing. 
 
 ---
 
