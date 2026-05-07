@@ -13,6 +13,7 @@ import { LoadingScreen } from '../components/LoadingScreen';
 import { Colors, API } from '../constants';
 import { Cave } from '../types';
 import { MapMarker } from '../components/MapMarker';
+import { useFavourites } from '../hooks/useFavourites';
 
 export default function MapScreen() {
   const insets = useSafeAreaInsets();
@@ -20,6 +21,7 @@ export default function MapScreen() {
   const [selectedCave, setSelectedCave] = useState<Cave | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const bottomAnim = useRef(new Animated.Value(0)).current;
+  const { isFavourite, toggleFavourite } = useFavourites();
 
   const { location, error: locError } = useLocation();
   const { filteredPlaces, loading: placesLoading, filters, setFilters, refresh } = usePlaces(
@@ -187,7 +189,11 @@ export default function MapScreen() {
           <TouchableOpacity style={styles.closeBtn} onPress={handleClose}>
             <Ionicons name="close" size={20} color={Colors.warmGray} />
           </TouchableOpacity>
-          <CaveCard cave={selectedCave} />
+          <CaveCard 
+            cave={selectedCave} 
+            isFavourite={isFavourite(selectedCave.id)}
+            onToggleFavourite={toggleFavourite}
+          />
         </Animated.View>
       )}
 

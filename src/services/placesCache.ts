@@ -64,6 +64,7 @@ export async function loadPlaces(forceRefresh = false): Promise<void> {
     // information later if we want to display it in the UI or for debugging purposes, and we also set the lastFetch time 
     // to now so we can know when the data was last updated and when we need to refresh it again based on the CACHE_TTL.
     const data = await fetchAllPlaces();
+    console.log('[Cache] Loaded:', data.length, 'source:', data[0]?.source);
     state.data = data.length > 0 ? data : MOCK_CAVES as Cave[];
     state.lastFetch = Date.now();
   } catch (err) {

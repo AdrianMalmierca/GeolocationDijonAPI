@@ -11,12 +11,14 @@ import { usePlaces } from '../hooks/usePlaces';
 import { CaveCard } from '../components/CaveCard';
 import { Colors } from '../constants';
 import { Cave } from '../types';
+import { useFavourites } from '../hooks/useFavourites';
 
 export default function ListScreen() {
   const insets = useSafeAreaInsets(); //to get the safe area insets of the device, to avoid the notch and the home indicator on iOS, and the status bar on Android
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'distance' | 'name'>('distance');
   const [activeCategory, setActiveCategory] = useState<Cave['category'] | 'all'>('all');
+  const { isFavourite, toggleFavourite } = useFavourites();
 
   const { filteredPlaces, loading, refresh } = usePlaces();
 
@@ -127,7 +129,13 @@ export default function ListScreen() {
       <FlatList
         data={displayedPlaces} //nemos list
         keyExtractor={item => item.id} //key extractor for the list, we use the id of the cave
-        renderItem={({ item }) => <CaveCard cave={item} />} //we use the CaveCard component to render each cave
+        renderItem={({ item }) => (
+          <CaveCard 
+            cave={item} 
+            isFavourite={isFavourite(item.id)}
+            onToggleFavourite={toggleFavourite}
+          />
+        )} //we use the CaveCard component to render each cave
         contentContainerStyle={styles.listContent}
         refreshControl={ //pull to refresh the list
           <RefreshControl
