@@ -45,7 +45,6 @@ export function useLocation(): UseLocationReturn {
       });
     } catch (err) {
       //Fallback to Dijons center in case there's an error
-      console.warn('[useLocation] Error, fallback a Dijon centre:', err);
       setError('Impossible de déterminer votre position. Affichage centré sur Dijon.');
       setLocation({
         latitude: 47.3220,

@@ -10,13 +10,14 @@ import { useFavourites } from '../hooks/useFavourites';
 import { Colors } from '../constants';
 import { Cave } from '../types';
 
-// Navigation types
+//Navigation types
 export type RootStackParamList = {
   MainTabs: undefined;
   Detail: { cave: Cave };
 };
 
-type DetailRouteProp = RouteProp<RootStackParamList, 'Detail'>;
+type DetailRouteProp = RouteProp<RootStackParamList, 'Detail'>; //the root object that contains all the routes of the app, 
+// and we want to get the route of the Detail screen, which has a parameter cave of type Cave
 
 const CATEGORY_CONFIG = {
   cave:       { icon: 'wine'       as const, label: 'Cave à vins',  color: Colors.burgundy },

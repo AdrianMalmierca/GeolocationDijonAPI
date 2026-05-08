@@ -8,6 +8,7 @@ interface UsePlacesReturn {
   filteredPlaces: Cave[];
   loading: boolean;
   error: string | null;
+  isOffline: boolean;
   refresh: (lat?: number, lng?: number) => Promise<void>;
   filters: FilterState;
   setFilters: (filters: FilterState) => void;
@@ -66,6 +67,7 @@ export function usePlaces(userLat?: number, userLng?: number): UsePlacesReturn {
     filteredPlaces,
     loading: cacheState.loading,
     error: cacheState.error,
+    isOffline: cacheState.isOffline,
     refresh,
     filters,
     setFilters,

@@ -24,7 +24,7 @@ export default function MapScreen() {
   const { isFavourite, toggleFavourite } = useFavourites();
 
   const { location, error: locError } = useLocation();
-  const { filteredPlaces, loading: placesLoading, filters, setFilters, refresh } = usePlaces(
+  const { filteredPlaces, loading: placesLoading, isOffline, filters, setFilters, refresh } = usePlaces(
     location?.latitude, location?.longitude
   );
 
@@ -128,6 +128,13 @@ export default function MapScreen() {
           </View>
         </View>
       </View>
+
+      {isOffline && (
+        <View style={[styles.offlineBanner, { top: insets.top + 56 }]}> //to float into the map
+          <Ionicons name="cloud-offline-outline" size={14} color={Colors.white} />
+          <Text style={styles.offlineText}>Données hors ligne</Text>
+        </View>
+      )}
 
       {/* Controls */}
       <View style={[styles.controls, { top: insets.top + 68 }]}>
@@ -292,4 +299,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: 5,
   },
   errorText: { color: Colors.white, fontSize: 12, flex: 1 },
+
+  //Offline banner
+  offlineBanner: {
+    position: 'absolute',
+    left: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: Colors.warmGray + 'EE',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  offlineText: {
+    color: Colors.white,
+    fontSize: 12,
+    fontWeight: '600',
+  },
 });

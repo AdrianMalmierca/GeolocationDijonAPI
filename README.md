@@ -242,9 +242,9 @@ Map markers are built entirely with React Native `View` and `StyleSheet` — no 
 
 ### Short Term
 - **Offline mode** — cache last successful API response with AsyncStorage
-- **Favourites** — save and persist favourite caves locally
-- **Detail screen** — full-screen modal with opening hours, appellation tags, and map pin
-- **Share** — deep link to a specific cave listing
+- ✅ **Favourites** — save and persist favourite caves locally
+- ✅ **Detail screen** — full-screen modal with opening hours, appellation tags, and map pin
+- ✅ **Share** — deep link to a specific cave listing
 
 ### Medium Term
 - **Route planner** — custom multi-stop itinerary builder with export to GPX

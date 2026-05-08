@@ -1,6 +1,10 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Cave } from '../types';
 import { fetchAllPlaces } from './dijonApi';
 import { MOCK_CAVES } from '../constants';
+
+const STORAGE_KEY = 'dijonvin_places_cache';
+const CACHE_TTL = 5 * 60 * 1000; //5 minutes in memory
 
 interface CacheState {
   data: Cave[];
@@ -8,16 +12,16 @@ interface CacheState {
   error: string | null;
   lastFetch: number | null;
   listeners: Set<() => void>;
+  isOffline: boolean;
 }
 
-const CACHE_TTL = 5 * 60 * 1000;
-
-const state: CacheState = { //global state in memory
+const state: CacheState = { //global state in memory to store the places data
   data: [],
   loading: false,
   error: null,
   lastFetch: null,
   listeners: new Set(),
+  isOffline: false,
 };
 
 function notify() {
@@ -37,7 +41,35 @@ export function getCacheState() { //encapsulate the state and only return the da
     data: state.data,
     loading: state.loading,
     error: state.error,
+    isOffline: state.isOffline,
   };
+}
+
+//Persist fresh API data to AsyncStorage for offline use
+async function persistToStorage(data: Cave[]): Promise<void> {
+  try {
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({ data, savedAt: Date.now() }));
+    console.log('[Cache] Persisted', data.length, 'places to AsyncStorage');
+  } catch (err) {
+    console.warn('[Cache] Failed to persist:', err);
+  }
+}
+
+//Load previously saved data when API is unavailable
+async function loadFromStorage(): Promise<Cave[] | null> {
+  try {
+    const raw = await AsyncStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const { data, savedAt } = JSON.parse(raw);
+    const ageHours = (Date.now() - savedAt) / (1000 * 60 * 60); //calculate the age of the cached data in hours, 
+    // to display it in the logs for debugging purposes, so we can know how old is the offline data and decide if we want 
+    // to use it or not based on its age
+    console.log(`[Cache] Offline data: ${data.length} places, saved ${ageHours.toFixed(1)}h ago`);
+    return data as Cave[];
+  } catch (err) {
+    console.warn('[Cache] Failed to load from storage:', err);
+    return null;
+  }
 }
 
 export async function loadPlaces(forceRefresh = false): Promise<void> {
@@ -64,12 +96,37 @@ export async function loadPlaces(forceRefresh = false): Promise<void> {
     // information later if we want to display it in the UI or for debugging purposes, and we also set the lastFetch time 
     // to now so we can know when the data was last updated and when we need to refresh it again based on the CACHE_TTL.
     const data = await fetchAllPlaces();
-    console.log('[Cache] Loaded:', data.length, 'source:', data[0]?.source);
-    state.data = data.length > 0 ? data : MOCK_CAVES as Cave[];
+
+    if (data.length > 0 && data[0].source === 'api') {
+      //Fresh data from API — save to AsyncStorage for future offline use
+      state.data = data;
+      state.isOffline = false;
+      await persistToStorage(data);
+    } else {
+      //API returned empty/mock — try AsyncStorage
+      const stored = await loadFromStorage();
+      if (stored && stored.length > 0) {
+        state.data = stored;
+        state.isOffline = true;
+      } else {
+        state.data = MOCK_CAVES as Cave[];
+        state.isOffline = false;
+      }
+    }
+
     state.lastFetch = Date.now();
   } catch (err) {
-    state.error = 'Erreur de chargement';
-    state.data = MOCK_CAVES as Cave[];
+    //Network error — fall back to AsyncStorage
+    const stored = await loadFromStorage();
+    if (stored && stored.length > 0) {
+      state.data = stored;
+      state.isOffline = true;
+      state.error = null;
+    } else {
+      state.error = 'Erreur de chargement';
+      state.data = MOCK_CAVES as Cave[];
+      state.isOffline = false;
+    }
   } finally {
     state.loading = false;
     notify();

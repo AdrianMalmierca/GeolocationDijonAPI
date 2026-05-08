@@ -5,8 +5,6 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-import { useLocation } from '../hooks/useLocation';
 import { usePlaces } from '../hooks/usePlaces';
 import { CaveCard } from '../components/CaveCard';
 import { Colors } from '../constants';
@@ -20,7 +18,7 @@ export default function ListScreen() {
   const [activeCategory, setActiveCategory] = useState<Cave['category'] | 'all'>('all');
   const { isFavourite, toggleFavourite } = useFavourites();
 
-  const { filteredPlaces, loading, refresh } = usePlaces();
+  const { filteredPlaces, loading, isOffline, refresh } = usePlaces();
 
   //Search + filter by category + sorted by distance or name
   const displayedPlaces = useMemo(() => { //Memo to calculate when the dependencies change,
@@ -67,6 +65,13 @@ export default function ListScreen() {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Caves & Terroir</Text>
         <Text style={styles.headerSubtitle}>{displayedPlaces.length} établissements trouvés</Text>
+
+        {isOffline && (
+          <View style={styles.offlineBanner}>
+            <Ionicons name="cloud-offline-outline" size={14} color={Colors.white} />
+            <Text style={styles.offlineText}>Données hors ligne</Text>
+          </View>
+        )}
 
         {/* Search */}
         <View style={styles.searchBar}>
@@ -130,7 +135,7 @@ export default function ListScreen() {
         data={displayedPlaces} //nemos list
         keyExtractor={item => item.id} //key extractor for the list, we use the id of the cave
         renderItem={({ item }) => (
-          <CaveCard 
+        <CaveCard 
             cave={item} 
             isFavourite={isFavourite(item.id)}
             onToggleFavourite={toggleFavourite}
@@ -264,5 +269,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
     paddingHorizontal: 32,
+  },
+  offlineBanner: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  gap: 6,
+  backgroundColor: Colors.warmGray,
+  borderRadius: 8,
+  paddingHorizontal: 10,
+  paddingVertical: 5,
+  alignSelf: 'flex-start',
+  marginBottom: 10,
+  },
+  offlineText: {
+    color: Colors.white,
+    fontSize: 12,
+    fontWeight: '600',
   },
 });
