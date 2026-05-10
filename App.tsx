@@ -15,17 +15,21 @@ import AboutScreen from './src/screens/AboutScreen';
 import DetailScreen from './src/screens/DetailScreen';
 import { Colors } from './src/constants';
 import { Cave } from './src/types';
+import PlannerScreen from './src/screens/PlannerScreen';
+import RouteMapScreen from './src/screens/RouteMapScreen';
 
 // Types
 export type RootStackParamList = {
   MainTabs: undefined;
   Detail: { cave: Cave };
+  RouteMap: { stops: Cave[] };
 };
 
 export type TabParamList = {
   Carte: undefined;
   Caves: undefined;
   Routes: undefined;
+  Planner: undefined;
   Infos: undefined;
 };
 
@@ -56,6 +60,8 @@ function MainTabs() {
             iconName = focused ? 'wine' : 'wine-outline';
           } else if (route.name === 'Routes') {
             iconName = focused ? 'navigate' : 'navigate-outline';
+          } else if (route.name === 'Planner') {
+            iconName = focused ? 'map' : 'map-outline';
           } else {
             iconName = focused ? 'information-circle' : 'information-circle-outline';
           }
@@ -66,6 +72,7 @@ function MainTabs() {
       <Tab.Screen name="Carte" component={MapScreen} />
       <Tab.Screen name="Caves" component={ListScreen} />
       <Tab.Screen name="Routes" component={RoutesScreen} />
+      <Tab.Screen name="Planner" component={PlannerScreen} />
       <Tab.Screen name="Infos" component={AboutScreen} />
     </Tab.Navigator>
   );
@@ -83,6 +90,10 @@ export default function App() {
             component={DetailScreen}
             options={{ presentation: 'card' }}
           />
+          <Stack.Screen 
+            name="RouteMap"
+            component={RouteMapScreen}
+            options={{ presentation: 'card' }} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

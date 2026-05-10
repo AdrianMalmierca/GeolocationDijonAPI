@@ -241,13 +241,13 @@ Map markers are built entirely with React Native `View` and `StyleSheet` — no 
 ## Future Improvements
 
 ### Short Term
-- **Offline mode** — cache last successful API response with AsyncStorage
+- ✅ **Offline mode** — cache last successful API response with AsyncStorage
 - ✅ **Favourites** — save and persist favourite caves locally
 - ✅ **Detail screen** — full-screen modal with opening hours, appellation tags, and map pin
 - ✅ **Share** — deep link to a specific cave listing
 
 ### Medium Term
-- **Route planner** — custom multi-stop itinerary builder with export to GPX
+- ✅ **Route planner** — custom multi-stop itinerary builder with export to GPX
 
 ### Long Term
 - **iOS build** — Apple Developer account + TestFlight distribution
