@@ -25,8 +25,8 @@ export function useFavourites(): UseFavouritesReturn {
   }, []);
 
   const isFavourite = useCallback(
-    (id: string) => favourites.some(f => f.id === id),
-    [favourites]
+    (id: string) => favourites.some(f => f.id === id), //filter the favourites array to check if any cave has the given id, and return true if found, false otherwise
+    [favourites] //when favourites changes, the function will be recreated with the new favourites array, so it will always have the latest data
   );
 
   const toggleFavourite = useCallback(async (cave: Cave) => {

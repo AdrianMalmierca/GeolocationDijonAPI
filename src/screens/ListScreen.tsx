@@ -10,6 +10,7 @@ import { CaveCard } from '../components/CaveCard';
 import { Colors } from '../constants';
 import { Cave } from '../types';
 import { useFavourites } from '../hooks/useFavourites';
+import { useLocation } from '../hooks/useLocation';
 
 export default function ListScreen() {
   const insets = useSafeAreaInsets(); //to get the safe area insets of the device, to avoid the notch and the home indicator on iOS, and the status bar on Android
@@ -18,13 +19,14 @@ export default function ListScreen() {
   const [activeCategory, setActiveCategory] = useState<Cave['category'] | 'all'>('all');
   const { isFavourite, toggleFavourite } = useFavourites();
 
-  const { filteredPlaces, loading, isOffline, refresh } = usePlaces();
+  const { location } = useLocation();
+  const { filteredPlaces, loading, isOffline, refresh } = usePlaces(location?.latitude, location?.longitude);
 
   //Search + filter by category + sorted by distance or name
   const displayedPlaces = useMemo(() => { //Memo to calculate when the dependencies change,
   // so we don't calculate the filtering and sorting on every render, but only when the filteredPlaces,
   // searchQuery, sortBy or activeCategory change
-    let places = [...filteredPlaces];
+    let places = [...filteredPlaces]; //copy cause after we use filter and sort, we don't want to mutate the original array, so we create a copy of it
 
     //Category filter
     if (activeCategory !== 'all') {

@@ -2,7 +2,7 @@ import axios from 'axios';
 import { MOCK_CAVES } from '../constants';
 import { Cave } from '../types';
 
-const DIJON_BBOX = '47.00,4.82,47.45,5.15';
+const DIJON_BBOX = '47.00,4.82,47.45,5.15'; //Bounding box of Dijon, in the format "south,west,north,east", used to limit the search area in Overpass API queries
 
 //Query a Overpass API with a given query string and return the elements
 const OVERPASS_SERVERS = [
@@ -37,7 +37,8 @@ function normalizeElement(el: any, category: Cave['category']): Cave | null {
     tags['addr:street'],
     tags['addr:postcode'],
     tags['addr:city'],
-  ].filter(Boolean).join(' ') || tags['contact:street'] || '';
+  ].filter(Boolean).join(' ') || tags['contact:street'] || ''; //filter(Boolean).join(' ') remove any null or undefined values and join the remaining parts with a space,
+  // and if the address is empty, we fallback to contact:street if available, so we use that as a fallback
 
   return { //build a Cave object from the OSM element, we use the id of the element prefixed with "osm-" t
   // o avoid conflicts with our mock data, and we use the category passed as a parameter to set the category of the cave
@@ -125,7 +126,7 @@ export async function fetchAllPlaces(): Promise<Cave[]> {
   const restos = restoResult.status === 'fulfilled' ? restoResult.value : [];
   const commerces = commercesResult.status === 'fulfilled' ? commercesResult.value : [];
 
-  console.log(`[Overpass] caves=${caves.length} restos=${restos.length} commerces=${commerces.length}`);
+  //console.log(`[Overpass] caves=${caves.length} restos=${restos.length} commerces=${commerces.length}`);
 
   if (caves.length > 0) console.log('[Overpass] Sample cave:', JSON.stringify(caves[0], null, 2));
 

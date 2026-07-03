@@ -8,7 +8,6 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { Cave } from '../types';
 import { Colors } from '../constants';
 import { formatDistance } from '../services/dijonApi';
-import { useFavourites } from '../hooks/useFavourites';
 import { RootStackParamList } from '../../App';
 
 interface CaveCardProps {
@@ -69,7 +68,7 @@ export function CaveCard({ cave, style, isFavourite = false, onToggleFavourite }
         <TouchableOpacity
           style={styles.heartBtn}
           onPress={() => onToggleFavourite?.(cave)}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} //increase the touchable area of the button, so it's easier to tap on it
         >
           <Ionicons
             name={favourite ? 'heart' : 'heart-outline'}

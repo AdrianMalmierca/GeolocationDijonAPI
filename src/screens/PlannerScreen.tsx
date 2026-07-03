@@ -7,11 +7,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-
 import { useRoutePlanner } from '../hooks/useRoutePlanner';
 import { usePlaces } from '../hooks/usePlaces';
 import { Colors } from '../constants';
-import { Cave } from '../types';
 import { RootStackParamList } from '../../App';
 
 type NavProp = StackNavigationProp<RootStackParamList, 'MainTabs'>;
@@ -33,7 +31,8 @@ export default function PlannerScreen() {
   const [searchQuery, setSearchQuery] = useState('');
 
   //Filter places for the picker, exclude already added stops
-  const availablePlaces = useMemo(() => { //useMemo is used to optimize performance by memoizing the filtered list of places, so it only recalculates when the filteredPlaces, searchQuery, or hasStop function changes.
+  const availablePlaces = useMemo(() => { //useMemo is used to optimize performance by memorizing the filtered list of places, 
+  // so it only recalculates when the filteredPlaces, searchQuery, or hasStop function changes
     const q = searchQuery.toLowerCase().trim();
     return filteredPlaces.filter(p => {
       if (hasStop(p.id)) return false; //if its already in the route, we dont want to show it in the picker

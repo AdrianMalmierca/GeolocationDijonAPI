@@ -30,9 +30,9 @@ export function useRoutePlanner(): UseRoutePlannerReturn {
 
   const addStop = useCallback((cave: Cave) => {
     setStops(prev => {
-      if (prev.some(s => s.id === cave.id)) return prev;
+      if (prev.some(s => s.id === cave.id)) return prev; //if the cave is already in the stops, we don't add it again
       const next = [...prev, cave];
-      persist(next);
+      persist(next); //save the new stops to AsyncStorage
       return next;
     });
   }, [persist]); //when addStop is called, it updates the stops state and then calls persist to save
@@ -48,7 +48,7 @@ export function useRoutePlanner(): UseRoutePlannerReturn {
 
   const moveStop = useCallback((fromIndex: number, toIndex: number) => {
     setStops(prev => {
-      const next = [...prev];
+      const next = [...prev]; //create a copy of the stops array to avoid mutating the state directly
       const [moved] = next.splice(fromIndex, 1); //The 1 means we are removing one item at the fromIndex position, and moved will contain the removed item
       next.splice(toIndex, 0, moved); //The 0 means we are not removing any item at the new position, just inserting
       persist(next);
@@ -61,7 +61,7 @@ export function useRoutePlanner(): UseRoutePlannerReturn {
     AsyncStorage.removeItem(STORAGE_KEY);
   }, []);
 
-  const hasStop = useCallback(
+  const hasStop = useCallback( //check if a cave is already in the stops array by its id
     (id: string) => stops.some(s => s.id === id),
     [stops] //stops is a dependency of hasStop, so whenever stops changes, hasStop will be re-created with the new stops value
   );

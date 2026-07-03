@@ -8,13 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useFavourites } from '../hooks/useFavourites';
 import { Colors } from '../constants';
-import { Cave } from '../types';
-
-//Navigation types
-export type RootStackParamList = {
-  MainTabs: undefined;
-  Detail: { cave: Cave };
-};
+import { RootStackParamList } from '../../App';
 
 type DetailRouteProp = RouteProp<RootStackParamList, 'Detail'>; //the root object that contains all the routes of the app, 
 // and we want to get the route of the Detail screen, which has a parameter cave of type Cave

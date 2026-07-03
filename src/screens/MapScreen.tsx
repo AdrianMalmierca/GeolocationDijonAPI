@@ -5,7 +5,6 @@ import {
 import MapView, { Marker, PROVIDER_GOOGLE, PROVIDER_DEFAULT } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 import { useLocation } from '../hooks/useLocation';
 import { usePlaces } from '../hooks/usePlaces';
 import { CaveCard } from '../components/CaveCard';

@@ -56,7 +56,7 @@ export function usePlaces(userLat?: number, userLng?: number): UsePlacesReturn {
   // on the distance and the other information, but we could add a filter for the radius in the future if we want 
   // to limit the number of places shown to the user based on their location and their preferences.
   const filteredPlaces = places.filter(place => {
-    if (place.category === 'cave' && !filters.showCaves) return false;
+    if (place.category === 'cave' && !filters.showCaves) return false; //if the place is a cave and the user has disabled caves in the filters, we don't show it
     if (place.category === 'restaurant' && !filters.showRestaurants) return false;
     if (place.category === 'commerce' && !filters.showCommerces) return false;
     return true;

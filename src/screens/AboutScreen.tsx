@@ -78,10 +78,13 @@ export default function AboutScreen() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Liens utiles</Text>
-          {links.map(link => (
+          {links.map((link, index) => (
             <TouchableOpacity
               key={link.url}
-              style={styles.linkRow}
+                  style={[
+                    styles.linkRow,
+                    index === links.length - 1 && { borderBottomWidth: 0 }
+                  ]}
               onPress={() => Linking.openURL(link.url)}
             >
               <Ionicons name={link.icon} size={20} color={Colors.burgundy} />

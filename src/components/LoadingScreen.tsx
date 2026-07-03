@@ -13,7 +13,7 @@ export function LoadingScreen({ message = 'Chargement des caves...' }: LoadingSc
   useEffect(() => {
     Animated.loop(
       Animated.sequence([
-        Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
+        Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }), //native driver is used to offload the animation to the native thread, which improves performance and reduces jank
         Animated.timing(fadeAnim, { toValue: 0.4, duration: 800, useNativeDriver: true }),
       ])
     ).start();

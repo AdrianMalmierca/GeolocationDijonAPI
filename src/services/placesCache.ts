@@ -99,7 +99,7 @@ export async function loadPlaces(forceRefresh = false): Promise<void> {
 
     if (data.length > 0 && data[0].source === 'api') {
       //Fresh data from API — save to AsyncStorage for future offline use
-      state.data = data;
+      state.data = data; 
       state.isOffline = false;
       await persistToStorage(data);
     } else {

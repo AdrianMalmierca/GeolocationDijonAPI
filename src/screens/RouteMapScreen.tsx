@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { Colors } from '../constants';
-import { Cave } from '../types';
+import { calculateDistance, formatDistance } from '../services/dijonApi';
 import { RootStackParamList } from '../../App';
 
 type RouteMapRouteProp = RouteProp<RootStackParamList, 'RouteMap'>;
@@ -40,7 +40,7 @@ export default function RouteMapScreen() {
     const origin = `${stops[0].latitude},${stops[0].longitude}`;
     const destination = `${stops[stops.length - 1].latitude},${stops[stops.length - 1].longitude}`;
     const waypoints = stops
-      .slice(1, -1)
+      .slice(1, -1) //slice to get all stops except the first and last because those are the origin and destination, so we only want the intermediate stops as waypoints
       .map(s => `${s.latitude},${s.longitude}`)
       .join('|');
 
@@ -58,32 +58,27 @@ export default function RouteMapScreen() {
 
     if (url) {
       Linking.canOpenURL(url).then(supported => {
-        Linking.openURL(supported ? url : webUrl);
+        Linking.openURL(supported ? url : webUrl); // If the app is not installed, open the web URL instead,
+        // supported is a boolean that indicates if the device can open the URL, if it can, we open the app URL, if not, we open the web URL
       });
     }
   };
 
-  const polylineCoords = stops.map(s => ({
+  const polylineCoords = stops.map(s => ({ // MapView expects an array of objects with latitude and longitude properties, so we map the stops to that format
+    //cause the stops are of type Cave, which has latitude and longitude properties, but we need to convert them to the format that MapView expects
     latitude: s.latitude,
     longitude: s.longitude,
   }));
 
   const totalDistance = () => {
-    let total = 0;
+    let totalMeters = 0;
     for (let i = 0; i < stops.length - 1; i++) {
-      const a = stops[i];
-      const b = stops[i + 1];
-      const R = 6371;
-      const dLat = ((b.latitude - a.latitude) * Math.PI) / 180;
-      const dLon = ((b.longitude - a.longitude) * Math.PI) / 180;
-      const x =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos((a.latitude * Math.PI) / 180) *
-        Math.cos((b.latitude * Math.PI) / 180) *
-        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-      total += R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+      totalMeters += calculateDistance(
+        stops[i].latitude, stops[i].longitude,
+        stops[i + 1].latitude, stops[i + 1].longitude
+      );
     }
-    return total < 1 ? `${(total * 1000).toFixed(0)} m` : `${total.toFixed(1)} km`;
+    return formatDistance(totalMeters);
   };
 
   return (
@@ -193,8 +188,8 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   map: { flex: 1 },
 
-  // Markers
-  markerContainer: { alignItems: 'center' },
+  //Markers
+  markerContainer: { alignItems: 'center', flexDirection: 'column' },
   markerBubble: {
     width: 32, height: 32, borderRadius: 16,
     justifyContent: 'center', alignItems: 'center',
@@ -210,7 +205,7 @@ const styles = StyleSheet.create({
     marginTop: -1,
   },
 
-  // Top bar
+  //Top bar
   topBar: {
     position: 'absolute', left: 14, right: 14,
     flexDirection: 'row', alignItems: 'center', gap: 10,
@@ -228,7 +223,7 @@ const styles = StyleSheet.create({
   },
   titleText: { color: Colors.cream, fontSize: 14, fontWeight: '600' },
 
-  // Bottom panel
+  //Bottom panel
   bottomPanel: {
     backgroundColor: Colors.white,
     borderTopLeftRadius: 20, borderTopRightRadius: 20,
@@ -249,7 +244,6 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     borderWidth: 1,
     borderColor: Colors.lightGray,
-    // Quita maxWidth: 160
   },
   stopChipName: {
     fontSize: 12,
@@ -263,7 +257,7 @@ const styles = StyleSheet.create({
   },
   stopChipNum: { color: Colors.white, fontSize: 10, fontWeight: '800' },
 
-  // Google Maps button
+  //Google Maps button
   googleMapsBtn: {
     flexDirection: 'row', alignItems: 'center',
     justifyContent: 'center', gap: 8,
