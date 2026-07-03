@@ -6,6 +6,10 @@ const DIJON_BBOX = '47.00,4.82,47.45,5.15'; //Bounding box of Dijon, in the form
 
 //Query a Overpass API with a given query string and return the elements
 const OVERPASS_SERVERS = [
+  'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
+  'https://overpass.openstreetmap.ru/api/interpreter',
+  'https://overpass.private.coffee/api/interpreter',
+  'https://overpass.osm.ch/api/interpreter',
   'https://overpass-api.de/api/interpreter',
   'https://overpass.kumi.systems/api/interpreter',
 ];
@@ -128,7 +132,7 @@ export async function fetchAllPlaces(): Promise<Cave[]> {
 
   //console.log(`[Overpass] caves=${caves.length} restos=${restos.length} commerces=${commerces.length}`);
 
-  if (caves.length > 0) console.log('[Overpass] Sample cave:', JSON.stringify(caves[0], null, 2));
+  //if (caves.length > 0) console.log('[Overpass] Sample cave:', JSON.stringify(caves[0], null, 2));
 
   const all = [...caves, ...restos, ...commerces]; //combine all the results in a single array
 

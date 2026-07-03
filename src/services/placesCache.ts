@@ -96,6 +96,7 @@ export async function loadPlaces(forceRefresh = false): Promise<void> {
     // information later if we want to display it in the UI or for debugging purposes, and we also set the lastFetch time 
     // to now so we can know when the data was last updated and when we need to refresh it again based on the CACHE_TTL.
     const data = await fetchAllPlaces();
+    console.log('[Cache] fetchAllPlaces returned:', data.length, 'source:', data[0]?.source);
 
     if (data.length > 0 && data[0].source === 'api') {
       //Fresh data from API — save to AsyncStorage for future offline use
