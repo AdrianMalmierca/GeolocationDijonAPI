@@ -179,7 +179,7 @@ All POI data comes from **OpenStreetMap** via the **Overpass API** — no authen
 | Restaurants  | `amenity=restaurant`, `amenity=wine_bar`                                        |
 | Commerces    | `shop=cheese`, `shop=deli`, `shop=butcher`, `shop=bakery`, `tourism=attraction` |
 
-Requests are sent to multiple Overpass servers in sequence (`overpass-api.de`, `overpass.kumi.systems`) — if the first server times out or returns empty, the next is tried automatically. If all servers fail, a curated mock dataset of 6 historic Burgundy estates is shown as fallback.
+Requests are sent to multiple Overpass servers in sequence (`overpass-api.de`, `overpass.kumi.systems`...) — if the first server times out or returns empty, the next is tried automatically. If all servers fail, a curated mock dataset of 6 historic Burgundy estates is shown as fallback.
 
 ---
 
